@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSM | Premium Electronics Wholesale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- Color Palette & Variables --- */
+        :root {
+            --cyan: #08d4f0;
+            --cyan-glow: rgba(8, 212, 240, 0.4);
+            --cyan-dim: rgba(8, 212, 240, 0.1);
+            --bg-main: #060913;
+            --bg-surface: #101625;
+            --bg-surface-glass: rgba(16, 22, 37, 0.6);
+            --text-light: #ffffff;
+            --text-muted: #94a3b8;
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- Base Setup --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* --- Floating Background Blobs --- */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: floatBlob 15s infinite ease-in-out alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: var(--cyan); }
+        .blob-2 { top: 40%; right: -10%; width: 400px; height: 400px; background: #0044ff; animation-delay: -5s; }
+        .blob-3 { bottom: 10%; left: 20%; width: 600px; height: 600px; background: rgba(8, 212, 240, 0.3); animation-delay: -10s; }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 80px) scale(1.1); }
+        }
+
+        /* --- SPA View Handling --- */
+        .page-view { display: none; animation: fadeInView 0.5s ease-out; }
+        .page-view.active { display: block; }
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Navigation --- */
+        #navbar {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(6, 9, 19, 0.7); backdrop-filter: blur(15px);
+            z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition-smooth);
+        }
+        #navbar.scrolled { box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
+        .nav-container {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto; padding: 1.2rem 2rem;
+        }
+        .nav-links { list-style: none; display: flex; gap: 2rem; }
+        .nav-links button {
+            background: none; border: none; font-family: inherit; font-weight: 600; font-size: 1rem;
+            color: var(--text-muted); cursor: pointer; transition: var(--transition-fast);
+            position: relative; padding-bottom: 4px;
+        }
+        .nav-links button:hover, .nav-links button.active { color: var(--cyan); }
+        .nav-links button::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: 0; left: 0; background-color: var(--cyan); transition: var(--transition-smooth);
+        }
+        .nav-links button:hover::after, .nav-links button.active::after { width: 100%; }
+        .logo-placeholder { width: 120px; height: 40px; cursor: pointer; transition: transform var(--transition-smooth); }
+        .logo-placeholder:hover { transform: scale(1.05); }
+
+        /* --- Global Typography & Buttons --- */
+        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 3rem; }
+        .section-title span { color: var(--cyan); text-shadow: 0 0 15px var(--cyan-glow); }
+        
+        .cta-button {
+            display: inline-block; padding: 1rem 2.5rem; background: var(--cyan);
+            color: var(--bg-main); font-family: inherit; font-weight: 800; font-size: 1rem;
+            border: none; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase;
+            cursor: pointer; transition: var(--transition-smooth); box-shadow: 0 0 20px var(--cyan-glow);
+        }
+        .cta-button:hover {
+            transform: translateY(-3px); box-shadow: 0 10px 30px var(--cyan-glow); background: #ffffff; color: var(--cyan);
+        }
+        .cta-button.outline { background: transparent; border: 2px solid var(--cyan); color: var(--cyan); box-shadow: none; }
+        .cta-button.outline:hover { background: var(--cyan); color: var(--bg-main); box-shadow: 0 0 20px var(--cyan-glow); }
+
+        /* --- Hero Banner --- */
+        .hero {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; padding: 0 2rem;
+        }
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(6, 9, 19, 0.9), rgba(6, 9, 19, 0.4)), 
+                        url('https://images.unsplash.com/photo-1616077168079-7e0f5eaaf020?auto=format&fit=crop&w=1920&q=80') center/cover;
+            z-index: -1; animation: slowZoom 20s infinite alternate linear;
+        }
+        @keyframes slowZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        
+        .hero-content {
+            max-width: 1200px; width: 100%; display: flex; justify-content: space-between; align-items: center;
+        }
+        .hero-text { max-width: 600px; }
+        .hero-text h1 { font-size: 4.5rem; line-height: 1.1; margin-bottom: 1.5rem; }
+        .hero-text h1 span { color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+        .hero-text p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2.5rem; }
+
+        /* Floating UI Card in Hero */
+        .floating-ui {
+            background: var(--bg-surface-glass); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+            padding: 2rem; width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: floatUI 6s infinite ease-in-out;
+        }
+        @keyframes floatUI {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .floating-ui-header { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;}
+        .pulse-dot { width: 10px; height: 10px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 10px var(--cyan); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--cyan-glow); } 70% { box-shadow: 0 0 0 15px rgba(8, 212, 240, 0); } 100% { box-shadow: 0 0 0 0 rgba(8, 212, 240, 0); } }
+
+        /* --- About Section --- */
+        .about-section { max-width: 1200px; margin: 6rem auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .about-image {
+            position: relative; border-radius: 20px; overflow: hidden; border: 1px solid rgba(8, 212, 240, 0.2);
+        }
+        .about-image img { width: 100%; height: auto; display: block; filter: brightness(0.8); transition: var(--transition-smooth); }
+        .about-image:hover img { filter: brightness(1.1); transform: scale(1.05); }
+        .about-text h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .about-text p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        /* --- Speciality / Stats --- */
+        .speciality-section { background: var(--bg-surface); padding: 5rem 0; margin-bottom: 6rem; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stats-grid { max-width: 1200px; margin: 0 auto 4rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; padding: 0 2rem; text-align: center; }
+        .stat-box h3 { font-size: 3rem; color: var(--cyan); margin-bottom: 0.5rem; }
+        .stat-box p { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+
+        /* Infinite Marquee */
+        .marquee-container { overflow: hidden; background: rgba(0,0,0,0.3); padding: 2rem 0; display: flex; white-space: nowrap; position: relative; }
+        .marquee-container::before, .marquee-container::after { content: ""; position: absolute; top: 0; width: 150px; height: 100%; z-index: 2; }
+        .marquee-container::before { left: 0; background: linear-gradient(to right, var(--bg-surface), transparent); }
+        .marquee-container::after { right: 0; background: linear-gradient(to left, var(--bg-surface), transparent); }
+        .marquee-content { display: inline-flex; animation: scrollMarquee 20s linear infinite; }
+        .marquee-content span { font-size: 2rem; font-weight: 800; color: rgba(255,255,255,0.1); margin: 0 3rem; text-transform: uppercase; transition: 0.3s; }
+        .marquee-content span:hover { color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+        @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- Products Components --- */
+        .products-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem 5rem; min-height: 60vh; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.5rem; }
+        .product-card {
+            background: var(--bg-surface); border-radius: 20px; overflow: hidden;
+            transition: var(--transition-smooth); border: 1px solid rgba(255,255,255,0.05);
+            opacity: 0; transform: translateY(30px); animation: fadeInUp 0.6s forwards;
+            position: relative;
+        }
+        .product-card:hover { transform: translateY(-10px); border-color: var(--cyan); box-shadow: 0 15px 40px rgba(8, 212, 240, 0.15); }
+        .product-img-wrapper { width: 100%; height: 280px; overflow: hidden; position: relative; background: #fff; }
+        .product-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .product-card:hover .product-img-wrapper img { transform: scale(1.1); }
+        .product-info { padding: 2rem; }
+        .product-brand { font-size: 0.85rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+        .product-title { font-size: 1.4rem; margin-bottom: 1rem; font-weight: 600; }
+        .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .product-price { font-size: 1.5rem; font-weight: 800; }
+        
+        .add-btn { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); padding: 0.5rem 1.5rem; border-radius: 30px; cursor: pointer; transition: var(--transition-fast); font-family: inherit; font-weight: 600; }
+        .add-btn:hover { background: var(--cyan); color: var(--bg-main); }
+
+        /* --- Promo Banner --- */
+        .promo-banner {
+            margin: 5rem 2rem; border-radius: 24px; padding: 6rem 2rem; text-align: center;
+            background: linear-gradient(rgba(6, 9, 19, 0.7), rgba(6, 9, 19, 0.9)),
+                        url('https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=1200&q=80') center/cover fixed;
+            border: 1px solid rgba(8, 212, 240, 0.2); max-width: 1200px; margin-left: auto; margin-right: auto;
+        }
+        .promo-banner h2 { font-size: 3rem; margin-bottom: 1rem; }
+        
+        /* --- Page Header (Products) --- */
+        .page-header { padding: 10rem 2rem 4rem; text-align: center; background: transparent; }
+        .page-header h1 { font-size: 3.5rem; color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+
+        /* --- Footer --- */
+        footer { background: var(--bg-surface); padding: 3rem 2rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto; position: relative; z-index: 10; }
+
+        /* --- Animations & Utilities --- */
+        .animate-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .hero-content { flex-direction: column; text-align: center; gap: 3rem; }
+            .hero-text h1 { font-size: 3rem; }
+            .floating-ui { display: none; /* Hide on small screens for space */ }
+            .about-section { grid-template-columns: 1fr; text-align: center; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="brand" onclick="navigateTo('home')" style="cursor: pointer;">
+                <svg class="logo-placeholder" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="120" height="40" rx="4" fill="none" stroke="#08d4f0" stroke-width="2" stroke-dasharray="4 4"/>
+                    <text x="60" y="22" fill="#08d4f0" font-family="'Outfit', sans-serif" font-weight="800" font-size="16" text-anchor="middle" dominant-baseline="middle" letter-spacing="2">GSM</text>
+                </svg>
+            </div>
+            <ul class="nav-links">
+                <li><button onclick="navigateTo('home')" id="nav-home" class="active">Home</button></li>
+                <li><button onclick="navigateTo('products')" id="nav-products">Products</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ==================== HOME PAGE VIEW ==================== -->
+    <main id="view-home" class="page-view active">
+        <!-- Hero Banner -->
+        <header class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-content animate-on-scroll">
+                <div class="hero-text">
+                    <h1>Next-Gen Tech.<br><span>Wholesale Power.</span></h1>
+                    <p>Your premium B2B & B2C gateway for top-tier mobile phones and audiophile earphones across all major global brands.</p>
+                    <button onclick="navigateTo('products')" class="cta-button">Explore Catalog</button>
+                </div>
+                <!-- Floating UI Component -->
+                <div class="floating-ui">
+                    <div class="floating-ui-header">
+                        <span style="font-weight: 600; color: var(--cyan);">Live Stock Status</span>
+                        <div class="pulse-dot"></div>
+                    </div>
+                    <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
+                        <img src="https://images.unsplash.com/photo-1696446701796-da61225697cc?w=100&q=80" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;" alt="Phone">
+                        <div>
+                            <p style="font-weight: 800; line-height: 1.2;">iPhone 15 Pro</p>
+                            <p style="font-size: 0.8rem; color: #4ade80;">+500 Units Available</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem;">
+                        <img src="https://images.unsplash.com/photo-1610945415296-7ea50b64d0a6?w=100&q=80" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;" alt="Phone">
+                        <div>
+                            <p style="font-weight: 800; line-height: 1.2;">Galaxy S24 Ultra</p>
+                            <p style="font-size: 0.8rem; color: #4ade80;">+320 Units Available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- About Us Section -->
+        <section class="about-section">
+            <div class="about-text animate-on-scroll">
+                <h2 class="section-title" style="text-align: left;">Defining the <span>Standard</span></h2>
+                <p>At GSM, we don't just distribute electronics; we elevate the supply chain. Operating at the intersection of B2B scale and B2C precision, we ensure the world's most sought-after devices reach your hands effortlessly.</p>
+                <p>Every smartphone and audio device in our catalog passes rigorous authenticity checks, ensuring that our partners and retail clients receive nothing but absolute perfection.</p>
+                <button onclick="navigateTo('products')" class="cta-button outline" style="margin-top: 1rem;">View Inventory</button>
+            </div>
+            <div class="about-image animate-on-scroll" style="transition-delay: 0.2s;">
+                <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=800&q=80" alt="Electronics Warehouse">
+            </div>
+        </section>
+
+        <!-- Speciality & Stats Section -->
+        <section class="speciality-section animate-on-scroll">
+            <h2 class="section-title">The GSM <span>Advantage</span></h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <h3>1M+</h3>
+                    <p>Devices Shipped</p>
+                </div>
+                <div class="stat-box">
+                    <h3>100%</h3>
+                    <p>Authenticity</p>
+                </div>
+                <div class="stat-box">
+                    <h3>24h</h3>
+                    <p>Dispatch Time</p>
+                </div>
+                <div class="stat-box">
+                    <h3>50+</h3>
+                    <p>Global Brands</p>
+                </div>
+            </div>
+
+            <!-- Infinite Brand Marquee -->
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <span>APPLE</span> <span>SAMSUNG</span> <span>SONY</span> <span>GOOGLE</span> <span>BOSE</span> <span>XIAOMI</span> <span>ONEPLUS</span> <span>SENNHEISER</span>
+                    <!-- Duplicate for infinite effect -->
+                    <span>APPLE</span> <span>SAMSUNG</span> <span>SONY</span> <span>GOOGLE</span> <span>BOSE</span> <span>XIAOMI</span> <span>ONEPLUS</span> <span>SENNHEISER</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="products-container" style="min-height: auto;">
+            <h2 class="section-title animate-on-scroll">Trending <span>Now</span></h2>
+            <div id="featured-grid" class="product-grid">
+                <!-- Featured Products injected via JS -->
+            </div>
+            <div style="text-align: center; margin-top: 4rem;">
+                <button onclick="navigateTo('products')" class="cta-button outline animate-on-scroll">See All Products</button>
+            </div>
+        </section>
+
+        <!-- Promo Banner -->
+        <section class="promo-banner animate-on-scroll">
+            <h2>The Audio Revolution is Here</h2>
+            <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">Discover our latest wholesale collection of noise-canceling earphones.</p>
+            <button onclick="navigateTo('products')" class="cta-button">Shop Audio</button>
+        </section>
+    </main>
+
+    <!-- ==================== PRODUCTS PAGE VIEW ==================== -->
+    <main id="view-products" class="page-view">
+        <section class="page-header">
+            <h1 class="animate-on-scroll">Our Collection</h1>
+            <p class="animate-on-scroll" style="font-size: 1.2rem; color: var(--text-muted); margin-top: 1rem;">Smartphones & High-Fidelity Audio</p>
+        </section>
+
+        <section class="products-container">
+            <div id="product-grid" class="product-grid">
+                <!-- Products injected via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <h2 style="color: var(--cyan); letter-spacing: 2px;">GSM</h2>
+            <p style="color: var(--text-muted);">&copy; 2026 GSM Electronics Wholesale. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Script / Logic -->
+    <script>
+        // --- 1. SIMULATED JSON DATA ---
+        const productDataJSON =[
+            { id: 1, name: "iPhone 15 Pro Max", category: "Mobile", price: 1199, brand: "Apple", image: "https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&w=800&q=80" },
+            { id: 2, name: "Galaxy S24 Ultra", category: "Mobile", price: 1299, brand: "Samsung", image: "https://images.unsplash.com/photo-1610945415296-7ea50b64d0a6?auto=format&fit=crop&w=800&q=80" },
+            { id: 3, name: "WF-1000XM5 Earbuds", category: "Audio", price: 298, brand: "Sony", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=800&q=80" },
+            { id: 4, name: "AirPods Pro (Gen 2)", category: "Audio", price: 249, brand: "Apple", image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=800&q=80" },
+            { id: 5, name: "Pixel 8 Pro", category: "Mobile", price: 999, brand: "Google", image: "https://images.unsplash.com/photo-1662955512211-1a3eb2d8b4dc?auto=format&fit=crop&w=800&q=80" },
+            { id: 6, name: "QuietComfort Ultra", category: "Audio", price: 299, brand: "Bose", image: "https://images.unsplash.com/photo-1631867673523-933e4db99df0?auto=format&fit=crop&w=800&q=80" }
+        ];
+
+        // --- 2. SINGLE PAGE APPLICATION (ROUTING) LOGIC ---
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`view-${pageId}`).classList.add('active');
+            document.getElementById(`nav-${pageId}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+
+            if (pageId === 'products') renderProducts('product-grid', productDataJSON);
+            observeScrollElements();
+        }
+
+        // --- 3. RENDER PRODUCTS ENGINE ---
+        function renderProducts(containerId, data) {
+            const grid = document.getElementById(containerId);
+            if(!grid) return;
+            grid.innerHTML = ''; 
+            
+            data.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card animate-on-scroll visible'; // visible immediately if JS renders
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                card.innerHTML = `
+                    <div class="product-img-wrapper">
+                        <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-brand">${product.brand} • ${product.category}</span>
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-footer">
+                            <span class="product-price">$${product.price}</span>
+                            <button class="add-btn">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- 4. UI EFFECTS & OBSERVERS ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        function observeScrollElements() {
+            const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.active .animate-on-scroll:not(.visible)').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // --- 5. INITIALIZATION ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Render top 3 featured products on Home Page
+            renderProducts('featured-grid', productDataJSON.slice(0, 3));
+            observeScrollElements();
+        });
+    </script>
+</body>
+</html>
