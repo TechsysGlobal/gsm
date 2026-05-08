@@ -6,6 +6,10 @@ function ProductCard({ product, index }) {
 
   const defaultImage = "https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&w=800&q=80";
 
+  // Convert AED (DHS) to EUR — 1 AED ≈ 0.25 EUR
+  const AED_TO_EUR = 0.25;
+  const priceInEur = (product.price * AED_TO_EUR).toFixed(0);
+
   return (
     <div
       ref={scrollRef}
@@ -24,7 +28,7 @@ function ProductCard({ product, index }) {
         <span className="product-brand">{product.brand} • {product.category}</span>
         <h3 className="product-title">{product.name}</h3>
         <div className="product-footer">
-          <span className="product-price">${product.price}</span>
+          <span className="product-price">€{priceInEur}</span>
           <button className="add-btn">Add to Cart</button>
         </div>
       </div>

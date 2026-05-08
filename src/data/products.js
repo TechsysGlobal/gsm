@@ -132,17 +132,6 @@ export const products = [
     "description": "Pro features in a smaller form factor with the best software experience in 2026."
   },
   {
-    "id": 13,
-    "name": "Google Pixel 10 (Standard)",
-    "brand": "Google",
-    "category": "Phones",
-    "price": 2650,
-    "stock": "In stock",
-    "badge": "AI First",
-    "image": "",
-    "description": "The most balanced Android flagship for everyday users and bulk retail."
-  },
-  {
     "id": 14,
     "name": "Google Pixel 10 Pro Fold",
     "brand": "Google",
