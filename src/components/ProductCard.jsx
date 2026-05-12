@@ -29,7 +29,6 @@ function ProductCard({ product, index }) {
         <h3 className="product-title">{product.name}</h3>
         <div className="product-footer">
           <span className="product-price">€{priceInEur}</span>
-          <button className="add-btn">Add to Cart</button>
         </div>
       </div>
     </div>
